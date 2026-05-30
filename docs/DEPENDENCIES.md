@@ -74,10 +74,10 @@
 | `models/invoice.py` | Pydantic (requirements.txt) | Every agent, API schemas |
 | `prompts/extraction.py` | Nothing (pure strings) | extraction_agent.py |
 | `agents/ocr_agent.py` | models/invoice.py, config.py, pytesseract, pymupdf | extraction_agent.py, orchestrator |
-| `agents/extraction_agent.py` | models/invoice.py, prompts/extraction.py, config.py, langchain-openai | validation_agent.py, orchestrator |
+| `agents/extraction_agent.py` | models/invoice.py, prompts/extraction.py, config.py, langchain-google-genai | validation_agent.py, orchestrator |
 | `agents/validation_agent.py` | models/invoice.py | correction_agent.py, orchestrator |
 | `tests/test_ocr_agent.py` | ocr_agent.py, test invoice files | Gate 1 |
-| `tests/test_extraction_agent.py` | extraction_agent.py, OPENAI_API_KEY | Gate 1 |
+| `tests/test_extraction_agent.py` | extraction_agent.py, GOOGLE_API_KEY | Gate 1 |
 | `tests/test_validation_agent.py` | validation_agent.py | Gate 1 |
 
 ### Phase 2: Correction + Orchestrator
@@ -113,7 +113,7 @@
 | Dependency | Required By | Must Be Available |
 |-----------|-------------|-------------------|
 | **Tesseract binary** | ocr_agent.py | Day 3 (installed in Docker image) |
-| **OPENAI_API_KEY** | extraction_agent.py, correction_agent.py, ocr_agent.py (vision) | Day 4 (first LLM call) |
+| **GOOGLE_API_KEY** | extraction_agent.py, correction_agent.py, ocr_agent.py (vision) | Day 4 (first LLM call) |
 | **Test invoice files** | All tests, integration testing | Day 3 (place in test-invoices/) |
 | **Docker + Docker Compose** | docker-compose.yml | Day 2 (scaffolding) |
 | **Node.js 18+** | Frontend build | Day 2 (scaffolding) |

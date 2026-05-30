@@ -45,11 +45,11 @@
 | | - Implement OCR Agent (ocr_agent.py) | | |
 | | - PyMuPDF text extraction | | |
 | | - Tesseract image extraction | | |
-| | - GPT-4o vision fallback | | |
+| | - Gemini 1.5 Pro vision fallback | | |
 | | - Write test_ocr_agent.py | OCR agent passes tests | |
 | **Day 4** | - Write extraction prompt templates | Prompts tested manually | F-2 |
 | | - Implement Extraction Agent (extraction_agent.py) | | |
-| | - GPT-4o structured output call | | |
+| | - Gemini 1.5 Pro structured output call | | |
 | | - Response parsing into ExtractedInvoice | | |
 | | - Write test_extraction_agent.py | Extraction agent passes tests | |
 | **Day 5** | - Implement Validation Agent (validation_agent.py) | All 5 rules working | F-3 |
@@ -127,7 +127,7 @@
 |---|---|---|
 | 0.5 day | Reduce test coverage (keep happy path only) | Low — manual testing covers gaps |
 | 1 day | Simplify UI (no status animation, basic layout) | Medium — functional but ugly |
-| 1.5 days | Drop GPT-4o vision fallback (use Tesseract only) | Medium — some images may fail |
+| 1.5 days | Drop Gemini vision fallback (use Tesseract only) | Medium — some images may fail |
 | 2+ days | **Red flag** — cut correction agent retries to 1 | High — demo scope reduced |
 
 ---

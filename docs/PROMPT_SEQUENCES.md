@@ -26,7 +26,7 @@ Create these files:
 - backend/app/__init__.py (empty)
 - backend/app/main.py — FastAPI app with CORS middleware for localhost:3000, a /api/health endpoint returning {"status": "ok"}, and uvicorn runner
 - backend/app/config.py — Pydantic Settings class reading from env vars per SPEC.md §8
-- backend/requirements.txt — include: fastapi, uvicorn, pydantic, pydantic-settings, langchain-openai, langgraph, pymupdf, pytesseract, structlog, python-multipart, pytest, pytest-asyncio
+- backend/requirements.txt — include: fastapi, uvicorn, pydantic, pydantic-settings, langchain-google-genai, langgraph, pymupdf, pytesseract, structlog, python-multipart, pytest, pytest-asyncio
 - backend/.env.example — all variables from SPEC.md §8 with placeholder values
 - backend/Dockerfile — Python 3.11 slim, install tesseract-ocr, copy app, run uvicorn
 
@@ -55,7 +55,7 @@ Create docker-compose.yml at project root with two services:
 - backend: builds from backend/Dockerfile, port 8000, env_file .env
 - frontend: builds from frontend/Dockerfile, port 3000, depends_on backend
 
-Include a .env file reference for OPENAI_API_KEY.
+Include a .env file reference for GOOGLE_API_KEY.
 ```
 
 ---
@@ -82,7 +82,7 @@ Strategy:
 1. Check mime_type: if "application/pdf" → try PyMuPDF first
 2. If PyMuPDF returns empty text (scanned PDF) → try Tesseract
 3. If mime_type is image (png/jpeg) → use Tesseract directly
-4. If Tesseract confidence < config.OCR_CONFIDENCE_THRESHOLD → fallback to GPT-4o vision
+4. If Tesseract confidence < config.OCR_CONFIDENCE_THRESHOLD → fallback to Gemini 1.5 Pro vision
 5. If all fail → return OCRResult with empty text, confidence=0, error message
 
 Import models from app.models.invoice. Import config from app.config.
@@ -109,7 +109,7 @@ Implement backend/app/agents/extraction_agent.py following SPEC.md §2.2.
 Function signature: def run_extraction(ocr_result: OCRResult) -> ExtractedInvoice
 
 Implementation:
-- Use ChatOpenAI from langchain-openai with model from config, temperature=0
+- Use ChatGoogleGenerativeAI from langchain-google-genai with model from config, temperature=0
 - Use .with_structured_output(ExtractedInvoice) for guaranteed schema compliance
 - Construct messages from prompts/extraction.py templates, injecting ocr_result.raw_text
 - If LLM call fails → retry once
@@ -188,7 +188,7 @@ Strategy:
    - Apply rule-based fix: recalculate subtotal from line items, recalculate total from subtotal+tax
    - Log as method="rule_based"
 2. For other errors:
-   - Re-prompt GPT-4o with correction prompt template + error context
+   - Re-prompt Gemini 1.5 Pro with correction prompt template + error context
    - Use with_structured_output(ExtractedInvoice)
    - Log as method="llm_reanalysis"
 3. Return corrected invoice + CorrectionLog

@@ -87,7 +87,7 @@ The `docs/architecture.mmd` diagram must show:
 | 5 | LangGraph Orchestrator | ☐ |
 | 6 | All 5 agents as distinct nodes | ☐ |
 | 7 | Conditional edge (validation → correction loop) | ☐ |
-| 8 | OpenAI GPT-4o (external service) | ☐ |
+| 8 | Google Gemini 1.5 Pro (external service) | ☐ |
 | 9 | Tesseract + PyMuPDF (local tools) | ☐ |
 | 10 | Data flow arrows with labels | ☐ |
 | 11 | Docker Compose boundary | ☐ |
@@ -101,7 +101,7 @@ Must be able to explain:
 | Choice | Rationale (one-liner) |
 |--------|----------------------|
 | **LangGraph** | Stateful graph with conditional edges — perfect for pipeline with retry loops |
-| **GPT-4o** | Multimodal + structured output + best extraction accuracy at time of build |
+| **Gemini 1.5 Pro** | Multimodal + structured output + free tier + high extraction accuracy |
 | **FastAPI** | Async, Pydantic-native, auto-generates Swagger docs for free |
 | **Tesseract** | Free, open-source OCR; no vendor lock-in |
 | **PyMuPDF** | Fastest text extraction from native PDFs |
@@ -135,5 +135,5 @@ Must be able to explain:
 | 1 | Single concurrent user | Cannot demo with 2 parallel uploads | Acceptable for MVP |
 | 2 | No persistent history | Results lost on server restart | Acceptable — ephemeral by design |
 | 3 | Multi-page invoices | May only extract from first page | Document as known limitation |
-| 4 | Very low-quality scans | OCR may return garbage text | GPT-4o vision fallback helps but not perfect |
+| 4 | Very low-quality scans | OCR may return garbage text | Gemini vision fallback helps but not perfect |
 | 5 | Non-English invoices | Will not extract correctly | Stated as out-of-scope in REQUIREMENTS.md |

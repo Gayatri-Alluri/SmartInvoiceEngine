@@ -14,8 +14,8 @@
 | Language | Python | 3.11+ | LangChain/LangGraph ecosystem is Python-first |
 | Framework | FastAPI | 0.115.x | Async, Pydantic-native, auto-generated OpenAPI docs |
 | Orchestration | LangGraph | 0.2.x | Stateful graph, conditional edges, built-in retries |
-| LLM Client | langchain-openai | 0.2.x | Native LangGraph integration |
-| LLM | GPT-4o (OpenAI) | Latest | Multimodal, structured output, best extraction accuracy |
+| LLM Client | langchain-google-genai | 2.x | Native LangGraph integration, free tier available |
+| LLM | Gemini 1.5 Pro (Google) | Latest | Multimodal, structured output, free tier (2 RPM), high accuracy |
 | OCR (text PDF) | PyMuPDF (fitz) | 1.24.x | Fast native text extraction, no external dependency |
 | OCR (scanned/image) | pytesseract | 0.3.x | Free, open-source, well-supported |
 | Schemas/Validation | Pydantic v2 | 2.x | Type-safe, JSON serialization, FastAPI-native |
@@ -53,7 +53,7 @@
 | **Responsibility** | Extract raw text from uploaded document |
 | **Input** | `DocumentInput` (file bytes + filename + mime type) |
 | **Output** | `OCRResult` (raw_text + confidence + method_used) |
-| **Strategy** | 1. If PDF with embedded text → PyMuPDF extract. 2. If scanned PDF/image → Tesseract. 3. If Tesseract confidence < 0.6 → fallback to GPT-4o vision. |
+| **Strategy** | 1. If PDF with embedded text → PyMuPDF extract. 2. If scanned PDF/image → Tesseract. 3. If Tesseract confidence < 0.6 → fallback to Gemini 1.5 Pro vision. |
 | **Error Handling** | If all methods fail → return `OCRResult` with empty text + confidence 0 + error message |
 | **Timeout** | 15 seconds |
 
@@ -64,7 +64,7 @@
 | **Responsibility** | Extract structured invoice fields from raw text using LLM |
 | **Input** | `OCRResult` (raw_text) |
 | **Output** | `ExtractedInvoice` (all 11 fields, nullable) |
-| **Strategy** | GPT-4o with structured output (response_format=json_schema). System prompt with field definitions + few-shot examples. Temperature 0. |
+| **Strategy** | Gemini 1.5 Pro with structured output (response_mime_type=application/json). System prompt with field definitions + few-shot examples. Temperature 0. |
 | **Error Handling** | If LLM call fails → retry once. If still fails → return partial extraction with nulls. |
 | **Timeout** | 20 seconds |
 
@@ -86,7 +86,7 @@
 | **Responsibility** | Fix extraction errors identified by validation |
 | **Input** | `ExtractedInvoice` + `ValidationResult` + `OCRResult` (original text) |
 | **Output** | `CorrectedInvoice` (same schema as ExtractedInvoice) + `CorrectionLog` |
-| **Strategy** | 1. For arithmetic errors → apply rule-based fix (recalculate from line items). 2. For other errors → re-prompt GPT-4o with error context + original text. Temperature 0. |
+| **Strategy** | 1. For arithmetic errors → apply rule-based fix (recalculate from line items). 2. For other errors → re-prompt Gemini 1.5 Pro with error context + original text. Temperature 0. |
 | **Max Retries** | 2 attempts total |
 | **Error Handling** | If correction fails after max retries → return best-effort data with error flags |
 | **Timeout** | 20 seconds per attempt |
@@ -451,7 +451,7 @@ Extract all text from this invoice image. Return only the raw text, preserving l
 | Upload | Invalid file type | Return 400 immediately |
 | Upload | File too large | Return 413 immediately |
 | OCR | PyMuPDF returns empty text | Fallback to Tesseract |
-| OCR | Tesseract confidence < 0.6 | Fallback to GPT-4o vision |
+| OCR | Tesseract confidence < 0.6 | Fallback to Gemini 1.5 Pro vision |
 | OCR | All methods fail | Set status=failed, return error |
 | Extraction | LLM timeout | Retry once |
 | Extraction | LLM returns invalid JSON | Retry once with stricter prompt |
@@ -469,8 +469,8 @@ Extract all text from this invoice image. Return only the raw text, preserving l
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `OPENAI_API_KEY` | Yes | — | OpenAI API key for GPT-4o |
-| `OPENAI_MODEL` | No | `gpt-4o` | Model name |
+| `GOOGLE_API_KEY` | Yes | — | Google AI API key for Gemini |
+| `LLM_MODEL` | No | `gemini-1.5-pro` | Model name |
 | `MAX_FILE_SIZE_MB` | No | `10` | Maximum upload file size |
 | `MAX_CORRECTION_RETRIES` | No | `2` | Max auto-correction attempts |
 | `OCR_CONFIDENCE_THRESHOLD` | No | `0.6` | Below this → fallback to vision |

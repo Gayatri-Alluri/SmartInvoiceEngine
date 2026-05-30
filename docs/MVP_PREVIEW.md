@@ -130,7 +130,7 @@
 | Backend | FastAPI | API response speed shown in metadata |
 | Orchestration | LangGraph | Pipeline stages visible in status tracker |
 | OCR | Tesseract / PyMuPDF | Image invoices processed correctly |
-| LLM | GPT-4o | Extraction quality across templates |
+| LLM | Gemini 1.5 Pro | Extraction quality across templates |
 | Containerization | Docker Compose | Single `docker-compose up` starts everything |
 
 ---

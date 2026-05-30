@@ -17,7 +17,7 @@
 | 0.4 | Docker Compose works | `docker-compose up` → both services healthy | ☐ |
 | 0.5 | Health endpoint responds | `curl http://localhost:8000/api/health` → `{"status": "ok"}` | ☐ |
 | 0.6 | Swagger UI accessible | Open `http://localhost:8000/docs` → Swagger renders | ☐ |
-| 0.7 | Config loads from env | `config.py` reads OPENAI_API_KEY without crash | ☐ |
+| 0.7 | Config loads from env | `config.py` reads GOOGLE_API_KEY without crash | ☐ |
 | 0.8 | .env.example exists | File present with all required vars listed | ☐ |
 | 0.9 | copilot-instructions.md exists | `.github/copilot-instructions.md` committed | ☐ |
 

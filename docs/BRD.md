@@ -261,7 +261,7 @@ Build a production-grade system that accepts PDF and image-based invoices, extra
 |---|-----------|
 | A-1 | Invoices are in English |
 | A-2 | Invoices follow standard business invoice structure (header, line items, totals) |
-| A-3 | LLM API (OpenAI/Azure) access is available |
+| A-3 | Google AI API (Gemini 1.5 Pro, free tier) access is available |
 | A-4 | Internet connectivity available for LLM API calls |
 | A-5 | Test invoices (varied templates) will be sourced or created for demo |
 

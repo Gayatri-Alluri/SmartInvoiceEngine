@@ -16,7 +16,7 @@
 - Python 3.11+
 - FastAPI (async)
 - LangGraph for orchestration
-- langchain-openai for LLM calls
+- langchain-google-genai for LLM calls
 - Pydantic v2 for all data models
 - PyMuPDF (fitz) for text PDF extraction
 - pytesseract for image OCR

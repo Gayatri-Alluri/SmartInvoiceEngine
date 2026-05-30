@@ -16,8 +16,8 @@ Smart Invoice Engine evolves from a single-user extraction tool into an enterpri
 
 | Feature | Scope |
 |---------|-------|
-| OCR Agent | Tesseract + PyMuPDF + GPT-4o vision fallback |
-| Extraction Agent | GPT-4o structured output, 11 invoice fields |
+| OCR Agent | Tesseract + PyMuPDF + Gemini 1.5 Pro vision fallback |
+| Extraction Agent | Gemini 1.5 Pro structured output, 11 invoice fields |
 | Validation Agent | 5 rule-based checks |
 | Correction Agent | LLM re-prompt with error context, max 2 retries |
 | JSON Formatter | Standardized schema with metadata |
@@ -54,7 +54,7 @@ Smart Invoice Engine evolves from a single-user extraction tool into an enterpri
 
 | Feature | Value |
 |---------|-------|
-| Fine-tuned extraction model | Distill GPT-4o extractions into a smaller, faster, cheaper model |
+| Fine-tuned extraction model | Distill Gemini extractions into a smaller, faster, cheaper model |
 | On-premise deployment | Air-gapped deployment with local LLM (Llama/Mistral) |
 | Real-time processing | Watch folder / email inbox integration for auto-processing |
 | Compliance & audit | Full audit trail, GDPR data handling, retention policies |
@@ -71,7 +71,7 @@ MVP (Now)                    v2.0                         v3.0
 Monolith                    Modular Monolith             Microservices
 (FastAPI + LangGraph)       (Domain modules)             (Event-driven)
 
-Single LLM (GPT-4o)        Multi-LLM routing            Fine-tuned + Local LLM
+Single LLM (Gemini 1.5 Pro)  Multi-LLM routing            Fine-tuned + Local LLM
                             (GPT-4o / Claude / Gemini)
 
 Local Docker Compose        Cloud deployment (K8s)       Multi-region HA

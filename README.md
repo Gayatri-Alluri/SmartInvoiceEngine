@@ -18,7 +18,7 @@ Invoice (PDF/Image) → OCR → Extraction → Validation → Auto-Correction �
 
 ## Features
 
-- **OCR Agent** — Extracts text from PDFs (PyMuPDF) and images (Tesseract), with GPT-4o vision fallback
+- **OCR Agent** — Extracts text from PDFs (PyMuPDF) and images (Tesseract), with Gemini 1.5 Pro vision fallback
 - **Extraction Agent** — LLM-powered structured data extraction (11 invoice fields)
 - **Validation Agent** — Rule-based checks (arithmetic, required fields, format)
 - **Correction Agent** — Auto-fixes errors via rules + LLM re-analysis (max 2 retries)
@@ -33,9 +33,9 @@ Invoice (PDF/Image) → OCR → Extraction → Validation → Auto-Correction �
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Python 3.11, FastAPI, LangGraph, langchain-openai |
-| LLM | OpenAI GPT-4o (structured output, temperature 0) |
-| OCR | PyMuPDF + Tesseract + GPT-4o Vision (fallback) |
+| Backend | Python 3.11, FastAPI, LangGraph, langchain-google-genai |
+| LLM | Google Gemini 1.5 Pro (structured output, temperature 0) |
+| OCR | PyMuPDF + Tesseract + Gemini Vision (fallback) |
 | Frontend | React 18, TypeScript 5, Tailwind CSS, Vite |
 | Infrastructure | Docker Compose |
 
@@ -46,7 +46,7 @@ Invoice (PDF/Image) → OCR → Extraction → Validation → Auto-Correction �
 ### Prerequisites
 
 - Docker + Docker Compose
-- OpenAI API key (GPT-4o access)
+- Google AI API key (Gemini 1.5 Pro access, free tier)
 
 ### Run
 
@@ -57,7 +57,7 @@ cd SmartInvoiceEngine
 
 # 2. Set up environment
 cp backend/.env.example backend/.env
-# Edit backend/.env and add your OPENAI_API_KEY
+# Edit backend/.env and add your GOOGLE_API_KEY
 
 # 3. Start everything
 docker-compose up --build
@@ -140,7 +140,7 @@ See [docs/architecture.mmd](docs/architecture.mmd) for the full Mermaid diagram.
                                └───────────────────────────────────────┘
                                         │                    │
                                         ▼                    ▼
-                                 Tesseract/PyMuPDF     OpenAI GPT-4o
+                                 Tesseract/PyMuPDF     Google Gemini 1.5 Pro
 ```
 
 ---
