@@ -1,0 +1,131 @@
+---
+title: Smart Invoice Engine — System Architecture
+---
+graph TB
+    %% ===== USER =====
+    USER([User / Evaluator])
+
+    %% ===== FRONTEND =====
+    subgraph FRONTEND["Frontend (React + TypeScript + Tailwind :3000)"]
+        direction TB
+        UF[UploadForm.tsx]
+        PS[PipelineStatus.tsx]
+        RV[ResultViewer.tsx]
+        DL[DownloadButton.tsx]
+        SVC[services/api.ts]
+        HOOK[useProcessInvoice.ts]
+    end
+
+    %% ===== BACKEND =====
+    subgraph BACKEND["Backend (FastAPI + Python :8000)"]
+        direction TB
+
+        subgraph API_LAYER["API Layer"]
+            EP1["POST /api/process"]
+            EP2["GET /api/status/{id}"]
+            EP3["GET /api/result/{id}"]
+            HEALTH["GET /api/health"]
+            SWAGGER["GET /docs (Swagger UI)"]
+        end
+
+        JOBS[("In-Memory Job Store")]
+
+        subgraph ORCH["LangGraph Orchestrator"]
+            direction LR
+            STATE["WorkflowState"]
+            GRAPH["Stateful Graph Engine"]
+        end
+
+        subgraph AGENTS["Agent Layer (Pure Functions)"]
+            direction LR
+            OCR["OCR Agent"]
+            EXT["Extraction Agent"]
+            VAL["Validation Agent"]
+            COR["Correction Agent"]
+            FMT["JSON Formatter"]
+        end
+
+        subgraph PROMPTS["Prompt Templates"]
+            P_EXT["extraction.py"]
+            P_COR["correction.py"]
+        end
+
+        subgraph MODELS["Domain Models (Pydantic v2)"]
+            M_DOC["DocumentInput"]
+            M_OCR["OCRResult"]
+            M_INV["ExtractedInvoice"]
+            M_VAL["ValidationResult"]
+            M_JSON["InvoiceJSON"]
+        end
+    end
+
+    %% ===== EXTERNAL SERVICES =====
+    subgraph EXTERNAL["External Services (Cloud)"]
+        GPT4O["OpenAI GPT-4o\n(Structured Output)"]
+        GPT4OV["OpenAI GPT-4o Vision\n(OCR Fallback)"]
+    end
+
+    %% ===== LOCAL TOOLS =====
+    subgraph LOCAL["Local Processing Tools"]
+        TESS["Tesseract OCR\n(scanned images)"]
+        PYMUPDF["PyMuPDF / fitz\n(text-based PDFs)"]
+    end
+
+    %% ===== DOCKER BOUNDARY =====
+    subgraph DOCKER["Docker Compose"]
+        FRONTEND
+        BACKEND
+        LOCAL
+    end
+
+    %% ===== USER CONNECTIONS =====
+    USER -->|"1. Upload PDF/Image"| UF
+    USER -->|"2. View progress"| PS
+    USER -->|"3. View JSON"| RV
+    USER -->|"4. Download"| DL
+
+    %% ===== FRONTEND INTERNAL =====
+    UF --> SVC
+    PS --> HOOK
+    RV --> SVC
+    HOOK --> SVC
+
+    %% ===== FRONTEND → BACKEND =====
+    SVC -->|"multipart/form-data"| EP1
+    SVC -->|"poll every 2s"| EP2
+    SVC -->|"fetch result"| EP3
+
+    %% ===== API → ORCHESTRATOR =====
+    EP1 -->|"create job + start task"| JOBS
+    EP1 -->|"invoke graph"| GRAPH
+    EP2 -->|"read current_stage"| JOBS
+    EP3 -->|"read final_output"| JOBS
+
+    %% ===== ORCHESTRATOR → AGENTS (numbered sequence) =====
+    GRAPH -->|"① Document"| OCR
+    GRAPH -->|"② raw_text"| EXT
+    GRAPH -->|"③ ExtractedInvoice"| VAL
+    GRAPH -->|"④ if invalid"| COR
+    GRAPH -->|"⑤ validated data"| FMT
+
+    %% ===== CONDITIONAL LOOP =====
+    VAL -->|"is_valid=false\nattempts < 2"| COR
+    COR -->|"re-validate"| VAL
+    VAL -->|"is_valid=true"| FMT
+
+    %% ===== AGENTS → EXTERNAL =====
+    EXT -->|"structured output\ntemperature=0"| GPT4O
+    COR -->|"re-prompt with\nerror context"| GPT4O
+    OCR -->|"fallback when\nconfidence < 0.6"| GPT4OV
+
+    %% ===== AGENTS → LOCAL =====
+    OCR -->|"scanned images"| TESS
+    OCR -->|"text-based PDF"| PYMUPDF
+
+    %% ===== AGENTS → PROMPTS =====
+    EXT --> P_EXT
+    COR --> P_COR
+
+    %% ===== STATE FLOW =====
+    GRAPH --> STATE
+    STATE -->|"stage updates"| JOBS
