@@ -1,0 +1,37 @@
+---
+title: Smart Invoice Engine — High-Level Architecture
+---
+graph LR
+    %% ===== ACTORS =====
+    USER([User])
+
+    %% ===== SYSTEM BLOCKS =====
+    UI["Frontend\n(React + Tailwind)\n:3000"]
+    API["Backend API\n(FastAPI)\n:8000"]
+    ORCH["LangGraph\nOrchestrator"]
+    LLM["OpenAI GPT-4o"]
+    OCR_TOOLS["OCR Tools\n(Tesseract + PyMuPDF)"]
+
+    %% ===== FLOW =====
+    USER -->|"Upload Invoice\n(PDF / Image)"| UI
+    UI -->|"REST API"| API
+    API -->|"Triggers Pipeline"| ORCH
+
+    ORCH -->|"Text Extraction"| OCR_TOOLS
+    ORCH -->|"Data Extraction\n+ Correction"| LLM
+
+    ORCH -->|"Structured JSON"| API
+    API -->|"Result + Status"| UI
+    UI -->|"JSON Output"| USER
+
+    %% ===== PIPELINE INSIDE ORCHESTRATOR =====
+    subgraph PIPELINE["Processing Pipeline"]
+        direction LR
+        O1["OCR"] --> O2["Extraction"]
+        O2 --> O3["Validation"]
+        O3 -->|"pass"| O5["JSON Output"]
+        O3 -->|"fail"| O4["Correction"]
+        O4 -->|"retry"| O3
+    end
+
+    ORCH --- PIPELINE
