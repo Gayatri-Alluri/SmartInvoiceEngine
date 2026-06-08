@@ -45,11 +45,11 @@
 | | - Implement OCR Agent (ocr_agent.py) | | |
 | | - PyMuPDF text extraction | | |
 | | - Tesseract image extraction | | |
-| | - Gemini 1.5 Pro vision fallback | | |
+| | - Gemini 2.5 Flash vision fallback | | |
 | | - Write test_ocr_agent.py | OCR agent passes tests | |
 | **Day 4** | - Write extraction prompt templates | Prompts tested manually | F-2 |
 | | - Implement Extraction Agent (extraction_agent.py) | | |
-| | - Gemini 1.5 Pro structured output call | | |
+| | - Gemini 2.5 Flash structured output call | | |
 | | - Response parsing into ExtractedInvoice | | |
 | | - Write test_extraction_agent.py | Extraction agent passes tests | |
 | **Day 5** | - Implement Validation Agent (validation_agent.py) | All 5 rules working | F-3 |

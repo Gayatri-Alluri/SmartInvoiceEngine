@@ -16,8 +16,8 @@ Businesses receive invoices in inconsistent formats (PDFs, scanned images) and m
 
 | # | Feature | Description |
 |---|---------|-------------|
-| F-1 | **OCR Agent** | Extract raw text from PDFs (text-based + scanned) and images (PNG, JPEG) using Tesseract/PyMuPDF; fallback to Gemini 1.5 Pro vision for images |
-| F-2 | **Extraction Agent** | LLM-powered (Gemini 1.5 Pro, structured output) extraction of invoice fields from raw text: invoice_number, date, due_date, vendor, buyer, line_items, subtotal, tax, total, currency |
+| F-1 | **OCR Agent** | Extract raw text from PDFs (text-based + scanned) and images (PNG, JPEG) using Tesseract/PyMuPDF; fallback to Gemini 2.5 Flash vision for images |
+| F-2 | **Extraction Agent** | LLM-powered (Gemini 2.5 Flash, structured output) extraction of invoice fields from raw text: invoice_number, date, due_date, vendor, buyer, line_items, subtotal, tax, total, currency |
 | F-3 | **Validation Agent** | Rule-based checks: line_items sum = subtotal, subtotal + tax = total, required fields present, numeric/date format validity; outputs pass/fail + error list |
 | F-4 | **Auto-Correction Agent** | On validation failure: re-prompt LLM with error context (max 2 retries); apply arithmetic rule fixes; log all corrections |
 | F-5 | **JSON Formatter** | Output validated data as standardized JSON with metadata (confidence, timing, corrections, validation status) |
@@ -62,13 +62,13 @@ Businesses receive invoices in inconsistent formats (PDFs, scanned images) and m
 - No login required
 
 ### Integration
-- Google AI API key available (Gemini 1.5 Pro access, free tier)
+- Google AI API key available (Gemini 2.5 Flash access, free tier)
 - Internet connectivity for LLM API calls
 - No external system integrations
 
 ### LLM
-- Gemini 1.5 Pro with structured output (JSON mode) for extraction
-- Gemini 1.5 Pro vision for image-based fallback OCR
+- Gemini 2.5 Flash with structured output (JSON mode) for extraction
+- Gemini 2.5 Flash vision for image-based fallback OCR
 - Temperature 0 for deterministic extraction
 - Max 2 correction retries to cap cost/latency
 
